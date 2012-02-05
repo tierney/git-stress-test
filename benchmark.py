@@ -61,22 +61,25 @@ def random_file(directory):
   try:
     files = [os.path.join(path, filename)
              for path, dirs, files in os.walk(directory)
-             for filename in files]
+             for filename in files
+             if '.git' not in path]
+
     return random.choice(files)
   except IndexError:
     return None
 
-subprocess.Popen('rm -rf /tmp/test && mkdir /tmp/test', shell=True)
-subprocess.Popen('git init /tmp/test', shell=True)
+subprocess.Popen('rm -rf /tmp/test', shell=True).wait()
+subprocess.Popen('mkdir /tmp/test', shell=True).wait()
+fm = File()
 os.chdir('/tmp/test')
+subprocess.Popen('git init', shell=True).wait()
 # Until we have 4 million commits.
-for commit in range(10):
+for commit in range(_NUM_COMMITS):
   # Queue tasks to do.
   tasks = list()
 
   # Tasks modify 2-5 files, create a file occasionally.
   for i in range(random.randrange(2, 6)):
-    print i
     r_file = random_file('/tmp/test')
     if not r_file or random.randrange(0, 10) <= 2:
       temp = tempfile.NamedTemporaryFile(dir='/tmp/test/', delete=False)
@@ -84,18 +87,17 @@ for commit in range(10):
     else:
       tasks.append(('MODIFY', r_file))
 
-  fm = File()
   # Execute tasks
   for task in tasks:
     if 'CREATED' == task[0]:
       # write lines into the file
       fm.create(task[1])
+      subprocess.Popen('git add *', shell=True).wait()
     elif 'MODIFY' == task[0]:
       # Modify means change exist lines and add a few lines at the end filled with
       # dictionary words.
       fm.modify(task[1])
 
-  print tasks
-  subprocess.Popen('git commit -am \'Commit number %d.\'' % commit)
+  subprocess.Popen('git commit -am \'Commit number %d.\'' % commit, shell=True).wait()
 
 # Commit.
