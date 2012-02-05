@@ -9,7 +9,8 @@ _NUM_COMMITS = 4000000
 _NUM_FILES = 1300000
 
 _GIT = '~/repos/git/git'
-_TARGET_DIR = '/media/c2c7372d-23b1-44d7-be77-218199273272/scratch/stress-test'
+#_TARGET_DIR = '/media/c2c7372d-23b1-44d7-be77-218199273272/scratch/stress-test'
+_TARGET_DIR = '/tmp/test'
 
 class File(object):
   def __init__(self):
@@ -93,12 +94,12 @@ for commit in range(_NUM_COMMITS):
     if 'CREATED' == task[0]:
       # write lines into the file
       fm.create(task[1])
-      subprocess.Popen('git add *', shell=True).wait()
+      subprocess.Popen('git add %s' % task[1], shell=True).wait()
     elif 'MODIFY' == task[0]:
       # Modify means change exist lines and add a few lines at the end filled with
       # dictionary words.
       fm.modify(task[1])
 
-  subprocess.Popen('git commit -am \'Commit number %d.\'' % commit, shell=True).wait()
+  subprocess.Popen('git commit --quiet -am \'Commit number %d.\'' % commit, shell=True).wait()
 
 # Commit.
