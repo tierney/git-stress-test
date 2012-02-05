@@ -9,8 +9,7 @@ _NUM_COMMITS = 4000000
 _NUM_FILES = 1300000
 
 _GIT = '~/repos/git/git'
-#_TARGET_DIR = '/media/c2c7372d-23b1-44d7-be77-218199273272/scratch/stress-test'
-_TARGET_DIR = '/tmp/test'
+_TARGET_DIR = '/media/c2c7372d-23b1-44d7-be77-218199273272/scratch/stress-test'
 
 class File(object):
   def __init__(self):
