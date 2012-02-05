@@ -9,6 +9,7 @@ _NUM_COMMITS = 4000000
 _NUM_FILES = 1300000
 
 _GIT = '~/repos/git/git'
+_TARGET_DIR = '/media/c2c7372d-23b1-44d7-be77-218199273272/scratch/stress-test'
 
 class File(object):
   def __init__(self):
@@ -33,7 +34,7 @@ class File(object):
 
     first_line_to_modify, second_line_to_modify =\
         sorted(random.sample(range(len(lines)), 2))
-    
+
     first_line = self._modify_line(first_line_to_modify, lines)
     second_line = self._modify_line(second_line_to_modify, lines)
 
@@ -68,10 +69,10 @@ def random_file(directory):
   except IndexError:
     return None
 
-subprocess.Popen('rm -rf /tmp/test', shell=True).wait()
-subprocess.Popen('mkdir /tmp/test', shell=True).wait()
+subprocess.Popen('rm -rf %s' % _TARGET_DIR, shell=True).wait()
+subprocess.Popen('mkdir %s' % _TARGET_DIR, shell=True).wait()
 fm = File()
-os.chdir('/tmp/test')
+os.chdir(_TARGET_DIR)
 subprocess.Popen('git init', shell=True).wait()
 # Until we have 4 million commits.
 for commit in range(_NUM_COMMITS):
@@ -80,9 +81,9 @@ for commit in range(_NUM_COMMITS):
 
   # Tasks modify 2-5 files, create a file occasionally.
   for i in range(random.randrange(2, 6)):
-    r_file = random_file('/tmp/test')
+    r_file = random_file('%s' % _TARGET_DIR)
     if not r_file or random.randrange(0, 10) <= 2:
-      temp = tempfile.NamedTemporaryFile(dir='/tmp/test/', delete=False)
+      temp = tempfile.NamedTemporaryFile(dir=_TARGET_DIR, delete=False)
       tasks.append(('CREATED', temp.name))
     else:
       tasks.append(('MODIFY', r_file))
